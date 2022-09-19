@@ -1,0 +1,45 @@
+#show command that mostly used
+
+show
+show ip route
+show interface
+monitor interfaces
+monitor log, show log tail
+
+#every command need to do this (commit and save)
+
+configure
+....
+commit
+save
+exit
+
+
+BASIC NEED
+
+#interface config
+
+set interfaces ethernet eth0 address ''
+set interfaces ethernet eth0 description ''
+
+-vlan create
+set interfaces ethernet eth0 vif '' address ''
+
+#dhcp config
+
+set service dhcp-server shared-network-name '' subnet '' default-router ''
+set service dhcp-server shared-network-name '' subnet '' name-server ''
+set service dhcp-server shared-network-name '' subnet '' domain-name ''
+set service dhcp-server shared-network-name '' subnet '' lease ''
+set service dhcp-server shared-network-name '' subnet '' range 0 start ''
+set service dhcp-server shared-network-name '' subnet '' range 0 stop ''
+
+#dns config
+
+set service dns forwarding cache-size '0'
+set service dns forwarding listen-address '< gateway >'
+set service dns forwarding allow-from '0.0.0.0/0'
+
+#reference
+
+https://docs.vyos.io/en/latest/quick-start.html#dhcp-dns-quick-start
