@@ -1,2 +1,59 @@
-#
+#before config or do something
 
+enable - if not in exec
+conf t - to config interface
+
+#create vlan
+int vlan<1-4094>
+
+or
+
+conf t
+vlan database
+vlan <id>-<id>
+vlan <id>
+end
+
+#ip config
+conf t
+int vlan <id>
+ip address [<ip> <subnet>] / [dhcp]
+end
+conf t
+ip default-gateway <ip>
+end
+
+#set port access vlan
+conf t
+int <interface id>
+switchport mode access
+switchport access vlan <id>
+no shut
+end
+
+or 
+
+conf t
+int range <interface>id-id
+switchport mode access
+switchport access vlan <id>
+no shut
+end
+
+#set port trunk
+conf t
+int <interface id>
+switchport mode trunk
+switchport trunk allowed vlan add <id> / <id>-<id>
+no shut
+end
+
+#no
+no ip address dhcp
+
+#show
+show ip interface
+show ip dhcp client interface
+
+#save
+copy running-config startup-config
