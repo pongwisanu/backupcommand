@@ -1,5 +1,38 @@
-list all 
-```
-lsblk 
+show command 
 
-```
+lsblk 
+fdisk -l
+
+#view physical
+pvs
+pvdisplay
+
+#view volumn group
+vgs
+vgdisplay
+
+#view logical
+lvs
+lvdisplay
+
+command for partition
+
+fdisk [fsname]
+
+n - for new 
+p - primary
+[1-4] - partition number
+default - default value for start
+default - default value for end
+
+t - select type of partition
+8e - LVM
+
+w - write disk
+
+####DEMO#####
+disk available
+
+#pvcreate 
+
+#
