@@ -6,6 +6,7 @@ fdisk -l
 #view physical
 pvs
 pvdisplay
+pvdisplay -S vgname=<volume_group_name> -C -o pv_name
 
 #view volumn group
 vgs
@@ -17,11 +18,11 @@ lvdisplay
 
 command for partition
 
-fdisk [fsname]
+fdisk <fsname>
 
 n - for new 
 p - primary
-[1-4] - partition number
+<1-4> - partition number
 default - default value for start
 default - default value for end
 
@@ -31,8 +32,17 @@ t - select type of partition
 w - write disk
 
 ####DEMO#####
-disk available
+if disk available ifnot do command for partition 
 
-#pvcreate 
+pvcreate <diskname>
 
-#
+vgcreate  - if no volumn group available or create new 
+vgextend <volume_group> <physical_volume>   - increase free space
+vgreduce <volume_group> <physical_volume>   - remove
+vgremove <volume_group> 
+
+lvcreate -L <size> -n <logical_volumn> <volume_group>   - if no logical volumn available or create new 
+lvresize -L <+|-><size> <volume_group>/<logical_volumn> - #ex lvresize -L +2GB lvm_tutorial/lv1
+
+resize2fs [diskname]
+
