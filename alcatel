@@ -1,0 +1,257 @@
+
+Alcatel Omniswitch basic commands
+Basic commands on
+Introduction
+This page is based on the notes I took when managing Alcatel Omniswitchs 6600, 6800 in 2007 and later 6850. The full documentation can be found on Alcatel-Lucent website.
+
+Managing the configuration files
+Alcatel Omniswitchs can operate in two modes: working and certified (show running-directory to know in which mode the switch is). In working mode, the configuration can be modified, while it is no possible in certified mode (well, actually, it is). When booting, if working and certified configuration files are different, the switch will boot in certified mode. Configuration files are stored in certifed/boot.cfg and working/boot.cfg (they can be directly edited with “vi”).
+
+save running -> working: write memory
+save working -> certified: copy working certified [flash-synchro], flash-synchro will synchronize the conf accross all slots
+save running even in certified mode: configuration snapshot all <file> Then move this file to working/boot.cfg
+reboot in working mode without rollback: reload working no rollback-timeout
+view running configuration: show configuration snapshot [all|vlan|ip|...] or write terminal
+When modifying the configuration, it can be useful to reload the switch in certified mode if a configuration error occur. It is possible to program the switch to reload a few minutes ahead in case you lose control: reload in <n> where n is the number of minutes to wait before reloading. A reload can be canceled with reload cancel. show reload will show you when the switch will reboot.
+
+Configure VLANs
+A layer 2 VLAN is created with vlan <vlan_number> enable name "vlan name" and removed with no vlan <vlan_number>. show vlan lists all VLANs, show vlan <vlan_number> shows vlan <vlan_number> details.
+Depending on the microcode version (show microcode), a layer 3 VLAN is created using:
+
+ip interface "interface name" vlan <vlan_number> address <address> mask <netmask>
+vlan router "interface name" vlan <vlan_number> address <address> mask <netmask>
+and destroyed with:
+
+no ip interface "interface name"
+no vlan router "interface name"
+Port association:
+
+To associate a port to a specific vlan: vlan <vlan_number> port default <slot>/<port>
+To list the ports: show vlan port
+To list the ports of a specified vlan: show vlan <vlan_number> port
+To show a port: show vlan port <slot>/<port>
+802.1Q:
+
+To tag a port: vlan <vlan_number> 802.1Q <slot>/<port> [<"comment">]
+To remove a tag: vlan <vlan_number> no 802.1Q <slot>/<port>
+Interfaces
+Global status: Show interfaces status
+Info about an interface (admin status, MAC, speed, duplex, errors, …): show interfaces [port|status|<slot>/<port>|...]
+Summary of interfaces errors: show interfaces counters errors
+To clear counters: interfaces <slot>[/port1-port2] no l2 statistics
+To change an interface: interface <slot>/<port> [speed <10_100_1000>|duplex <half_full>|autoneg <state>|flood rate <rate>]
+To switch from autonegociation to 100FD, set
+
+autoneg off
+speed 100 and duplex full
+If forced in 100FD while autoneg is on, the port will stay down
+To disable an interface: interface <slot>/<port> admin down
+
+Link Aggregation
+Dynamic LAG (LACP)
+lacp linkagg <id> size <size> admin state enable
+lacp linkagg <id> actor admin key <key>
+lacp agg <slot/port> actor admin key <key>
+
+Static LAG
+static linkagg <id> size <size> admin state enable
+static linkagg <id> name <name>
+static agg <slot/port> agg num <id>
+
+Hardware
+When stacking is operational, one switch is primary, one other secondary, the others idle. If the primary disappears, the secondary becomes primary and the first idle becomes secondary.
+Get info about the chassis: show chassis and about the stack: show stack topology.
+
+To monitor the health of the system: show health all (cpu|memory)
+
+Show CMM (Control Management Module – Alcatel ) information: show cmm
+
+System
+Uptime, date, name, contact, location: show system
+To change:
+
+system name <"name">
+system contact <"contact">
+system location <"location">
+The default prompt is “->”. session prompt default "sw1->" changes it to “sw1->”. You can get the other session parameters with show session config
+
+When a command outputs to many lines on the screen, it is possible to use “more” to see page by page. Use more to activate the mode and more size <size> to set the number of lines shown. Cancel this mode with no more.
+
+To change the timeout of the telnet/ssh sessions: session timeout cli <timeout>
+
+NTP
+Set a server: ntp server <server_ip>. Even if the DNS is configured, you cannot specify a name for the NTP server. Then activate NTP: ntp client enable.
+Get NTP info:
+
+show ntp client: tells if NTP is on or off, when was the last updated, …
+show ntp server-list: get the list of servers and with which server the swich is synchronized
+Logs
+Show logging conf: show swlog
+Get switch logs:
+
+show log swlog: get all logs
+show log swlog timestamp <mounth/day/year> <hour:minute>: only logs since the specified hour
+empty logs: swlog clear
+Enable syslog with: swlog output socket <syslog_server_ip>
+
+STP
+STP can operates in two modes: flat and 1×1. In flat mode, there is only one instance for the whole switch whereas in 1×1 mode, there is one instance per VLAN (like pvst on Cisco switches or vstp on Juniper ones). I recommend the 1×1 mode if you do not want to go the MSTP way. Change STP mode: bridge mode (flat|1x1)
+
+Get STP conf: show spantree
+
+It is possible to deactivate STP on specified vlans/ports : vlan <vlan_number> stp (enable|disable) and bridge <vlan_number> <slot>/<port> (enable|disable)
+
+Change STP algorithm: bridge protocol (802.1D|STP|RTSP). (In 2007), I did not manage to set rstp for all vlan as a global config, I had to set it vlan per vlan using: bridge 1x1 <vlan_number> protocol (802.1D|STP|RTSP).
+
+DNS
+Name servers: ip name-server <IP1> <IP2>
+Domain name: ip domain-name <domain-name>
+Activate DNS client: ip domain-lookup
+DHCP relay
+ip service udp-relay
+DHCP relay only for specified vlans: ip helper per-vlan only
+DHCP server address: ip helper address <dhcp_server> vlan <vlan_number>
+Enable DHCP relay: ip udp relay BOOTP
+Services
+Activate/deactivate services: [no] ip service (ftp|ssh|telnet|http|secure-http|udp-relay|snmp|all). List of activated services: show ip service.
+For https: ip http ssl
+
+AAA
+Authentification can be local or made with a radius
+To activate a service, the authentification have to be set: aaa authentification default "local", aaa authentification (console|ssh|ftp|802.1X|vlan|...) "local"
+
+ARP
+ARP table: show arp
+Mac Address table: show mac-address-table
+Add a static MAC/IP entry: arp <IP> <MAC>, no arp <IP> to remove it.
+Clear dynamic arp entries: clear arp-table
+To specify when an dynamic entry timeouts (default: 300seconds): mac-address-table aging-time <seconds> [vlan <vlan_number>]
+
+SNMP
+First, you have to create a user and give it the right to do SNMP:
+
+user <"username"> read-only (all|ip|interface|...) password <password>
+The only way I found to give the user SNMP capabilities is to use the web interface …, but you can desactivate it with user <"username"> no snmp
+Then configure the snmp server:
+
+snmp security no security
+Associate the community string with the user you created: snmp community map <"community"> user <"username"> on
+To configure the SNMP trap server: snmp station <server_ip> [<port>] <"user"> (v1|v2c|v3) enable
+snmp authentification trap (enable|disable)
+To filter the traps sent by the switch: snmp trap filter <server_ip> <filter_code>
+Port mirroring
+Port mirroring works 12 ports by 12 ports. It is possible to configure multiple sources for one session and thus see the traffic of multiple ports in one output.
+
+show port mirroring status
+port mirroring <session> source <slot>/<port> destination <slot>/<port> enable
+no port mirroring <session>
+POE
+By default, the POE is disabled on all ports.
+To enable the POE on a given port: lanpower start <slot>/<port>
+To enable it on the whole slot: lanpower start <slot>
+
+To stop the POE, use the symmetric commande lanpower stop (<slot>/<port>|<slot>)
+
+Show the POE configuration: show lanpower <slot>
+
+To limit the power available for a given port: lanpower <slot>/<port> power <milliwatts>
+To limit the power available for a slot: lanpower <slot> maxpower <watts>
+
+A power of 230W is enough for a full slot equipped with IP Phones (note: TBC).
+It has been noticed that a switch may prove instable with POE if too many equipments are connected and its PSU is not enough powerfull.
+
+QOS & ACL
+In AOS, ACL and QoS are configured in the same “qos” section.
+Apply QoS when modified: qos apply
+Disable QoS (useful for troubleshooting): qos disable
+
+By default, QOS is not trusted in access ports and all tags are set to 0. It is trusted on trunked ports. To trust everywhere: qos trust ports
+To trust on one given port: qos port <slot>/<port> trusted
+
+The rules are a combinaison of the following elements:
+
+policy network : define subnets
+policy condition : define conditions (from subnet1 to subnet2, …)
+policy action : define actions (permit, deny, …)
+policy rule : apply action to condition (if X then Y)
+The syntax for the different blocks is the following:
+policy network group <gp_name> <subnet1> mask <mask1> <subnet2> mask <mask2> ...
+policy condition <c_name> source network group <gp_name1> destination group <gp_name2>
+policy action <a_name> disposition <action>
+policy rule <r_name> [disable] precedence <p> condition <c_name> action <a_name>, where precedence is the order rules can be applied
+
+As an example:
+
+policy network group VoIP 192.168.1.0 mask 255.255.255.0 192.168.11.0 mask 255.255.254.0
+policy network group Data 172.16.0.0 mask 255.255.255.0
+
+policy condition "VoIP-VoIP" source network group VoIP destination network group VoIP
+policy condition "VoIP-Data"  source network group VoIP destination network group Data
+policy condition "Data-Data" source network group Data destination network group Data
+policy condition "Other" source ip any destination ip any
+
+policy action Deny disposition deny
+policy action Permit
+
+policy rule "Allow VoIP-VoIP" precedence 200 condition "VoIP-VoIP" action Permit
+policy rule "Allow VoIP-Data" disable precedence 200 condition "VoIP-Data" action Permit
+policy rule "Allow Data-Data" precedence 200 condition "Data-Data" action Permit
+policy rule "Deny Other" precedence 200 condition "Other" action Deny
+
+qos port 1/2 trusted  
+qos port 1/3 trusted  
+qos apply
+802.1X
+aaa radius-server "radius_srv1" host <IP Addr> key <auth_key> retransmit 3 timeout 2 auth-port 1812 acct-port 1813
+aaa radius-server "radius_srv2" host <IP Addr> key <auth_key> retransmit 3 timeout 2 auth-port 1812 acct-port 1813
+
+# Use the radius for vlan assignement
+aaa authentication vlan single-mode "radius_srv1" "radius_srv2"
+# use the internal database for authent to the local services
+aaa authentication default "local"
+aaa authentication console "local"
+aaa authentication ftp "local"
+aaa authentication snmp "local"
+# 801.1X authentication servers
+aaa authentication 802.1x radius_srv1 radius_srv2
+# MAC base authentication servers (used for devices that can't do 802.1X like IP-Phones)
+aaa authentication mac radius_srv1 radius_srv2
+
+AVLAN:
+# Authentication portal in the switch. By default, last IP of the subnet.
+avlan auth-ip <vlan-ID> <IP address, in same VLAN, different of switch IP address>
+
+VLAN definition
+
+vlan 5 enable name "VoIP"
+vlan 10 enable name "Data"
+vlan 10 authentication enable
+
+configuration of interface 1/3
+
+vlan 10 port default 1/3
+# enable dynamic vlan assignemt
+vlan port mobile 1/3
+# enable 802.1X 
+vlan port 1/3 802.1x enable
+
+# 802.1X
+# - direction both => control on inbound + outbound traffic
+# - port-control auto => port initially in unauthorized state, and put in "authorized mode" automatically by the switch upon the exchanged between the switch and the end station
+# - quiet-period 60 => reject the 802.1X authentications during 60s after an authentication failure
+# - server-timeout 30 => superseded by the aaa radius-server ... timeout
+# - re-authperiod 3600 => 3600s=1h before re-authent is required
+# - no reauthentication => disables the reauthent
+802.1x 1/3 direction both port-control auto quiet-period 60 tx-period 30 supp-timeout 30 server-timeout 30 max-req 2 re-authperiod 3600 no reauthentication
+
+# length of a captive portal session
+802.1x 1/3 captive-portal session-limit 12 retry-count 3
+
+# poll the end device 2 times before stating it is not 802.1X compliant
+802.1x 1/3 supp-polling retry 2
+# if authentication is successful but returns no VLAN ID ("pass"), use default vlan for the supplicant else ("fail"), block the port
+802.1x 1/3 supplicant policy authentication pass group-mobility default-vlan fail block
+#idem for non supplicant (not 802.1X) devices - authentication by MAC address with a Radius
+802.1x 1/3 non-supplicant policy authentication pass group-mobility block fail block
+# used by supplicant and non supplicant when "captive-portal" is used in the "802.1x supplicant policy" or "802.1x non-supplicant policy"
+802.1x 1/3 captive-portal policy authentication pass default-vlan fail block
