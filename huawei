@@ -1,0 +1,123 @@
+:system view
+
+system-view
+or
+sys
+
+:show all config
+
+dis current-configuration
+
+:create vlan
+
+vlan vlan_number
+
+:show ip interface
+
+display ip interface brief
+
+:add ip route
+
+ip route-static 0.0.0.0 0.0.0.0 Vlanif39 10.10.39.1
+
+: create ip interface
+
+interface vlanif vlan_num
+-> ip address x.x.x.x 255.255.255.x
+
+:add vlan member to interface
+
+interface GigabitEthernet0/0/2
+-> port link-type access
+-> port default vlan 31
+
+or
+
+int gig0/0/2
+-> port link-type access
+-> port default vlan 31
+
+:Create Port trunk 
+
+interface GigabitEthernet0/0/1
+-> port link-type trunk
+-> port trunk allow-pass vlan 31 39
+
+or
+
+int Gig0/0/1
+-> port link-type trunk
+-> port trunk allow-pass vlan 31 39
+
+--add all vlan
+
+interface GigabitEthernet0/0/1
+-> port link-type trunk
+-> port trunk allow-pass all
+
+or
+
+int Gig0/0/1
+-> port link-type trunk
+-> port trunk allow-pass vlan all
+
+
+:create ssh remote
+
+rsa local-key-pair create
+
+user-interface vty 0 4
+-> authentication-mode aaa
+-> protocol inbound ssh
+
+stelnet server enable
+
+aaa
+-> local-user USERNAME password cipher PASSWORD
+-> local-user USERNAME privilege level 15
+-> local-user USERNAME service-type ssh|telnet|terminal|http
+
+ssh user USERNAME
+ssh user USERNAME authentication-type password
+ssh user USERNAME service-type stelnet|sftp|all
+
+:enable ip Helper
+
+ENABLED per VLAN interface
+
+
+dhcp enable
+
+Vlanif2100
+ dhcp select relay
+ dhcp relay server-ip DHCP_SERVER_IP_ADDRESS
+
+Vlanif2101
+ dhcp select relay
+ dhcp relay server-ip DHCP_SERVER_IP_ADDRESS
+
+:Huawei S5720 Switch AAA administrator password it gets the error: “the password has appeared in recent 5 times”
+
+aaa
+local-aaa-user password policy administrator
+password history record number 0
+
+:ospf
+Loopback ip 10.9.9.9 
+
+int LoopBack 0
+-> ip address 10.9.9.9 255.255.255.255
+
+router id 10.9.9.9
+ospf
+area 0
+network x.x.x.x x.x.x.x <------ wildcard
+
+:disable spaning tree
+stp disable
+
+:exit
+q
+
+:save config 
+save
