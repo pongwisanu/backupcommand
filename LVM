@@ -3,6 +3,10 @@ show command
 lsblk 
 fdisk -l
 
+disk space
+du
+df -h
+
 #view physical
 pvs
 pvdisplay
