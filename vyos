@@ -38,7 +38,7 @@ set service dhcp-server shared-network-name '' subnet '' range 0 stop ''
 
 set service dns forwarding cache-size '0'
 set service dns forwarding listen-address '< dns >'
-set service dns forwarding allow-from '0.0.0.0/0'
+set service dns forwarding allow-from ''
 
 #reference
 
