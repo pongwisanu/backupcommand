@@ -14,6 +14,10 @@ commit
 save
 exit
 
+# First install - after install and first login run
+install image
+
+
 
 BASIC NEED
 
