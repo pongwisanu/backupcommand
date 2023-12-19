@@ -18,46 +18,46 @@ display ip interface brief
 
 :add ip route
 
-ip route-static 0.0.0.0 0.0.0.0 Vlanif39 10.10.39.1
+ip route-static 0.0.0.0 0.0.0.0 <vlan_if_name> <Gateway>
 
 : create ip interface
 
 interface vlanif vlan_num
--> ip address x.x.x.x 255.255.255.x
+-> ip address <address> <subnet>
 
 :add vlan member to interface
 
-interface GigabitEthernet0/0/2
+interface GigabitEthernet0/0/<number>
 -> port link-type access
--> port default vlan 31
+-> port default vlan <vlan_number>
 
 or
 
 int gig0/0/2
 -> port link-type access
--> port default vlan 31
+-> port default vlan <vlan_number>
 
 :Create Port trunk 
 
 interface GigabitEthernet0/0/1
 -> port link-type trunk
--> port trunk allow-pass vlan 31 39
+-> port trunk allow-pass vlan <vlan_number> , <vlan_number> , ....
 
 or
 
 int Gig0/0/1
 -> port link-type trunk
--> port trunk allow-pass vlan 31 39
+-> port trunk allow-pass vlan <vlan_number> , <vlan_number> , ....
 
 --add all vlan
 
-interface GigabitEthernet0/0/1
+interface GigabitEthernet0/0/<number>
 -> port link-type trunk
 -> port trunk allow-pass all
 
 or
 
-int Gig0/0/1
+int Gig0/0/<number>
 -> port link-type trunk
 -> port trunk allow-pass vlan all
 
@@ -73,13 +73,13 @@ user-interface vty 0 4
 stelnet server enable
 
 aaa
--> local-user USERNAME password cipher PASSWORD
--> local-user USERNAME privilege level 15
--> local-user USERNAME service-type ssh|telnet|terminal|http
+-> local-user <username> password cipher <password>
+-> local-user <username> privilege level 15
+-> local-user <username> service-type ssh|telnet|terminal|http
 
-ssh user USERNAME
-ssh user USERNAME authentication-type password
-ssh user USERNAME service-type stelnet|sftp|all
+ssh user <username>
+ssh user <username> authentication-type password
+ssh user <username> service-type stelnet|sftp|all
 
 :enable ip Helper
 
