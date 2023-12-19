@@ -33,19 +33,19 @@ interface GigabitEthernet0/0/<number>
 
 or
 
-int gig0/0/2
+int gig0/0/<number>
 -> port link-type access
 -> port default vlan <vlan_number>
 
 :Create Port trunk 
 
-interface GigabitEthernet0/0/1
+interface GigabitEthernet0/0/<number>
 -> port link-type trunk
 -> port trunk allow-pass vlan <vlan_number> , <vlan_number> , ....
 
 or
 
-int Gig0/0/1
+int Gig0/0/<number>
 -> port link-type trunk
 -> port trunk allow-pass vlan <vlan_number> , <vlan_number> , ....
 
