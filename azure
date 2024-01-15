@@ -1,0 +1,12 @@
+Git disable window credential manager 
+
+git config --edit --system
+
+- remove line " helper = manager "
+
+for ssh 
+
+git config --edit --global
+
+[core]
+    askpass =
