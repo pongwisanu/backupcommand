@@ -1,2 +1,7 @@
 Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/microsoft/Windows-Containers/Main/helpful_tools/Install-DockerCE/install-docker-ce.ps1" -o install-docker-ce.ps1
 .\install-docker-ce.ps1
+
+
+
+Error :
+no matching manifest for windows/amd64 10.0.17763 in the manifest list entries - solution find image that to OS EXP- python:3.10 is not suit for windows server it need to be python:3.10.11
