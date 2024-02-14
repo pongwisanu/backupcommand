@@ -1,6 +1,7 @@
 show command 
 
 lsblk 
+lsblk -s (show new disk)
 fdisk -l
 
 disk space
