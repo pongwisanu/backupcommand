@@ -1,5 +1,7 @@
 show command 
 
+for host in /sys/class/scsi_host/*; do echo "- - -" | sudo tee $host/scan; ls /dev/sd* ; done 
+
 lsblk 
 lsblk -s (show new disk)
 fdisk -l
