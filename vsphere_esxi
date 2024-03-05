@@ -6,3 +6,15 @@ setup if page 503 on step 2 go on port 5480
 ESXI
 
 if error CPU not support " allowLegacyCPU=True "
+
+
+Build and Patch versions
+
+https://kb.vmware.com/s/article/2143832
+
+Update patch command 
+
+esxcli software vib < update/install > --deport=<path to patch .zip file or url> 
+
+"update" use for update in the same U
+"install" use for update to new U
