@@ -18,3 +18,9 @@ esxcli software vib < update/install > --deport=<path to patch .zip file or url>
 
 "update" use for update in the same U
 "install" use for update to new U
+
+
+Certificate management
+
+/usr/lib/vmware-vmca/bin/certificate-manager
+
