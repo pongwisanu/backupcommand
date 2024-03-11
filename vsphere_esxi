@@ -24,3 +24,7 @@ Certificate management
 
 /usr/lib/vmware-vmca/bin/certificate-manager
 
+Restart port 5480 if certificate not chained
+
+/sbin/service vami-lighttp restart
+
