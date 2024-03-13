@@ -1,0 +1,4 @@
+#Uninstall
+1. microk8s reset
+2. sudo snap disable microk8s
+3. sudo snap remove microk8s
