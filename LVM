@@ -51,5 +51,6 @@ vgremove <volume_group>
 lvcreate -L <size> -n <logical_volumn> <volume_group>   - if no logical volumn available or create new 
 lvresize -L <+|-><size> <volume_group>/<logical_volumn> - #ex lvresize -L +2GB lvm_tutorial/lv1
 
+df -h # to view diskname
 resize2fs [diskname]
 
